@@ -20,7 +20,7 @@ function buildMetadata(sample) {
     // Inside a loop, you will need to use d3 to append new
     // tags for each key-value in the filtered metadata.
     for (key in result){
-      sampleData.append("h6").text(${key.toUpperCase()}: ${result[key]});
+      sampleData.append("h6").text(`${key.toUpperCase()} : ${result[key]}`);
     };
   });
 };
@@ -34,8 +34,8 @@ function buildCharts(sample) {
     let samples = data.samples;
 
     // Filter the samples for the object with the desired sample number
-    let filteredData = samples.filter(sampleObj => sampleObj.id == sample);
-    let result = filteredData[0];
+    let fData = samples.filter(sampleObj => sampleObj.id == sample);
+    let result = fData[0];
     console.log("Data: ", result);
 
     // Get the otu_ids, otu_labels, and sample_values
@@ -49,24 +49,25 @@ function buildCharts(sample) {
       xaxis : {title: "OTU ID"},
       yaxis : {title: "Number of Bacteria"}
     };
-    let bubbleData ={
-      x = otu_ids,
-      y = sample_values,
+    let bubbleData = {
+      x : otu_ids,
+      y : sample_values,
       text: otu_ids,
       mode: "markers",
       marker: {
         size: sample_values,
-      };
+        color: otu_ids,
+      }
     };
 
     // Render the Bubble Chart
-    Plotly.newPlot("Bubble Chart", bubbleLabels, bubbleData)
+    Plotly.newPlot("bubble", bubbleLabels, bubbleData);
 
     // For the Bar Chart, map the otu_ids to a list of strings for your yticks
-    let slicedYData = otu_ids.slice(0,10);
+    let slicedYData = result.otu_ids.slice(0,10);
     slicedYData.reverse();
-    let sortedXData = sample_values.sort(a,b) => b.sample_values - a.sample_values;
-    let xData = sortedXData.slice(0,10).revserse();
+    //let sortedXData = result.sample_values.sort((a,b) => b.sample_values - a.sample_values);
+    let xData = result.sample_values.slice(0,10).reverse();
 
 
 
@@ -86,7 +87,7 @@ function buildCharts(sample) {
     };
 
     // Render the Bar Chart
-    Plotly.newPlot("Bar Plot", barData, barLabels);
+    Plotly.newPlot("bar", barData, barLabels);
   });
 };
 
@@ -104,7 +105,7 @@ function init() {
     // Use the list of sample names to populate the select options
     // Hint: Inside a loop, you will need to use d3 to append a new
     // option for each sample name.
-    for (id i in names){
+    for (id in names){
       dropDown.append("Options").attr("value", id).text(id);
     };
 
