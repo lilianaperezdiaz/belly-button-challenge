@@ -46,38 +46,43 @@ function buildCharts(sample) {
     // Build a Bubble Chart
     let bubbleLabels = {
       title : "Bacteria Cultures Per Sample",
+      margin: {t:0},
+      hovermode: "closest",
       xaxis : {title: "OTU ID"},
-      yaxis : {title: "Number of Bacteria"}
+      yaxis : {title: "Number of Bacteria"},
+      margin: {t:30}
     };
-    let bubbleData = {
+    let bubbleData =
+    [ {
       x : otu_ids,
       y : sample_values,
-      text: otu_ids,
+      text: otu_labels,
       mode: "markers",
       marker: {
         size: sample_values,
         color: otu_ids,
+        colorscale: "Earth"
       }
-    };
+    }];
 
     // Render the Bubble Chart
-    Plotly.newPlot("bubble", bubbleLabels, bubbleData);
+    Plotly.newPlot("bubble", bubbleData, bubbleLabels);
 
     // For the Bar Chart, map the otu_ids to a list of strings for your yticks
-    let slicedYData = result.otu_ids.slice(0,10);
-    slicedYData.reverse();
+    let slicedYData = otu_ids.map(otu_id => `otu ${otu_id}`);
     //let sortedXData = result.sample_values.sort((a,b) => b.sample_values - a.sample_values);
-    let xData = result.sample_values.slice(0,10).reverse();
+    let xData = sample_values.slice(0,10).reverse();
 
 
 
-    let barData = {
-      x: xData.map(object => object.sample_values), 
-      y : slicedYData.map(object => object.otu_ids), 
-      text: xData,
+    let barData = 
+    [{
+      x: xData, 
+      y : slicedYData.slice(0,10).reverse(), 
+      text: otu_labels.slice(0,10).reverse(),
       type: "bar",
       orientation: "h",
-    };
+    }];
 
     // Build a Bar Chart
     // Don't forget to slice and reverse the input data appropriately
@@ -105,8 +110,8 @@ function init() {
     // Use the list of sample names to populate the select options
     // Hint: Inside a loop, you will need to use d3 to append a new
     // option for each sample name.
-    for (id in names){
-      dropDown.append("Options").attr("value", id).text(id);
+    for (let id=0; id < names.length; id++){
+      dropDown.append("option").text(names[id]).property("value", names[id]);
     };
 
     // Get the first sample from the list
